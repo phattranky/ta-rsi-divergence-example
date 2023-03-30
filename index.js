@@ -43,23 +43,25 @@ function checkRSIDivergence(items) {
     const RSI_LENGTH = 14;
     const rsi_function = ta.wrsi; // default (the tradingview rsi indicator)
     const rsiValues = rsi_function(closePrices, RSI_LENGTH);
-    const length = 12; // array length to check
+    const length = 80; // array length to check (i would set this as large as possible)
+    const lookback = 12;
+    const smoother = 3;
     const threshold_exaggerated = 0.03; // percentual change threshold for 'exaggerated' divergence
     const threshold_normal = 0.01; // percentua
 
-    for (let currLookBack = 3; currLookBack <= 30; currLookBack++) {
-      console.log(`${pairItem.pair} - ${currLookBack}`);
-      // console.log(closePrices);
-      // console.log(rsiValues);
+    for(let i = length; i < closePrices.length; i++) {
+      console.log(`${pairItem.pair} - ${i}`);
+      // console.log(closePrices.slice(i-length,i+1))
+      // console.log(rsiValues.slice(i-length,i+1))
       const divergenceResult = ta.divergence_state(
-        closePrices,
-        rsiValues,
+        closePrices.slice(i-length,i+1),
+        rsiValues.slice(i-length,i+1),
         length,
-        currLookBack,
+        lookback,
+        smoother,
         threshold_exaggerated,
         threshold_normal
       );
-
       divergenceResult.forEach((itm) => {
         itm.forEach((aa) => {
           if (aa !== 'convergence') {
